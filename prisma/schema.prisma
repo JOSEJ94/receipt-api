@@ -22,3 +22,15 @@ model User {
   password String
   createdAt DateTime @default(now())
 }
+
+model Invoice {
+  id          String  @id @default(uuid())
+  userId      String
+  veryfiId    String  @unique
+  fileUrl     String
+  vendor      String?
+  total       Float
+  currency    String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+}
