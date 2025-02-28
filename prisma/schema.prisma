@@ -24,13 +24,24 @@ model User {
 }
 
 model Invoice {
-  id          String  @id @default(uuid())
-  userId      String
-  veryfiId    String  @unique
-  fileUrl     String
-  vendor      String?
-  total       Float
-  currency    String?
-  date        DateTime
-  createdAt   DateTime @default(now())
+  id              String  @id @default(uuid())
+  userId          String
+  veryfiId        Int     @unique
+  fileName        String
+  imageThumbnail  String
+  image           String
+  vendor          String?
+  currencyCode    String?
+  currency        String?
+  invoiceNumber   String?
+  date            DateTime
+  createdAt       DateTime @default(now())
+  tax             Float?
+  subtotal        Float?
+  total           Float?
+  vendorName      String?
+  vendorCategory  String?
+  vendorLogo      String?
+  vendorType      String?
+
 }
