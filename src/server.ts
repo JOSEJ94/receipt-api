@@ -4,7 +4,7 @@ import jwt from "@fastify/jwt";
 import dotenv from "dotenv";
 import { authRoutes } from "./routes/auth";
 import { protectedRoutes } from "./routes/protected";
-import { authPlugin } from "./plugins/auth";
+import { invoiceRoutes } from "./routes/invoices";
 
 dotenv.config();
 
@@ -25,9 +25,8 @@ app.decorate(
     }
   }
 );
-
-// app.register(authPlugin);
 app.register(protectedRoutes);
+app.register(invoiceRoutes);
 
 app.get("/", async () => {
   return { message: "API is running!" };
