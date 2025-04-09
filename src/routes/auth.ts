@@ -3,10 +3,6 @@ import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma";
 
 export async function authRoutes(app: FastifyInstance) {
-  app.get("/asd", async () => {
-    return { message: "Asd" };
-  });
-
   app.post("/register", async (request, reply) => {
     const { email, username, password } = request.body as {
       email: string;
@@ -20,8 +16,16 @@ export async function authRoutes(app: FastifyInstance) {
       const user = await prisma.user.create({
         data: { email, username, password: hashedPassword },
       });
+      const token = app.jwt.sign({ id: user.id, email: user.email });
 
-      return reply.status(201).send({ id: user.id, email: user.email });
+      return reply
+        .status(201)
+        .send({
+          token,
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        });
     } catch (error) {
       return reply.status(400).send({ error: "User already exists" });
     }
