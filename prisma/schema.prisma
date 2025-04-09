@@ -13,17 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  username String  @unique
-  firstName String @default("")
-  lastName String @default("")
-  password String
-  createdAt DateTime @default(now())
+enum InvoiceStatus {
+  IN_QUEUE
+  PROCESSING
+  PROCESSED
 }
 
+model User {
+  id        String  @id @default(uuid())
+  email     String  @unique
+  username  String  @unique
+  firstName String @default("")
+  lastName  String @default("")
+  password  String
+  createdAt DateTime @default(now())
+}
 model Invoice {
+  status          InvoiceStatus @default(IN_QUEUE)
   id              String  @id @default(uuid())
   userId          String
   veryfiId        Int     @unique
