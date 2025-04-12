@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { processInvoice } from "../utils/veryfi";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { randomInt } from "crypto";
 
 export async function invoiceRoutes(app: FastifyInstance) {
   app.post(
@@ -10,15 +11,34 @@ export async function invoiceRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { imageUrl } = request.body as { imageUrl: string };
       const userId = request.user?.id;
-
       console.log("Processing invoice for user:", userId);
 
       try {
+        // Create invoice record in processing state
+        const invoice = await prisma.invoice.create({
+          data: {
+            userId,
+            veryfiId: randomInt(0, 999999),
+            fileName: "Processing",
+            imageThumbnail: imageUrl,
+            image: imageUrl,
+            currencyCode: "Unknown",
+            invoiceNumber: "Unknown",
+            tax: 0,
+            subtotal: 0,
+            total: 0,
+            vendorName: "Unknown",
+            vendorCategory: "Unknown",
+            vendorLogo: "",
+            vendorType: "Unknown",
+            currency: "Unknown",
+            date: new Date(),
+          },
+        });
         // 🔥 Procesar imagen con Veryfi
         const veryfiData = await processInvoice(imageUrl);
-
-        // 🔒 Guardar la metadata en la BD
-        const savedInvoice = await prisma.invoice.create({
+        const savedInvoice = await prisma.invoice.update({
+          where: { id: invoice.id },
           data: {
             userId,
             veryfiId: veryfiData.id,
