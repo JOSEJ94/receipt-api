@@ -2,24 +2,19 @@ import { FastifyInstance } from "fastify";
 import { processInvoice } from "../utils/veryfi";
 import { prisma } from "../lib/prisma";
 import { z } from "zod";
-import { randomInt, randomUUID } from "crypto";
-import { uploadImageToBucket } from "../utils/gofile";
+import { randomInt } from "crypto";
+import { uploadBase64Image } from "../utils/firebase";
 
 export async function invoiceRoutes(app: FastifyInstance) {
   app.post(
     "/invoices",
     { onRequest: [app.authenticate] },
     async (request, reply) => {
-      const { imageBase64 } = request.body as { imageBase64: string };
-      const buffer = Buffer.from(imageBase64, "base64");
-      const filename = `${randomUUID()}.jpg`;
-
-      // ⬆️ Upload image to CDN (Gofile)
-      const data = await uploadImageToBucket(buffer, filename);
-      console.log("Image uploaded to CDN:", data);
-
-      // const { imageUrl } = request.body as { imageUrl: string };
       const userId = request.user?.id;
+      const { imageBase64 } = request.body as { imageBase64: string };
+      const filename = `invoices/${userId}/${Date.now()}.jpg`;
+      const imageUrl = await uploadBase64Image(imageBase64, filename);
+      console.log("Image URL:", imageUrl);
       console.log("Processing invoice for user:", userId);
 
       try {
@@ -45,7 +40,7 @@ export async function invoiceRoutes(app: FastifyInstance) {
           },
         });
         // 🔥 Procesar imagen con Veryfi
-        const veryfiData = await processInvoice(data.imageUrl);
+        const veryfiData = await processInvoice(imageUrl);
         const savedInvoice = await prisma.invoice.update({
           where: { id: invoice.id },
           data: {
