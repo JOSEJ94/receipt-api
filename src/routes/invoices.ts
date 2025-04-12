@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import { z } from "zod";
 import { randomInt } from "crypto";
 import { uploadBase64Image } from "../utils/firebase";
+import { InvoiceStatus } from "@prisma/client";
 
 export async function invoiceRoutes(app: FastifyInstance) {
   app.post(
@@ -60,7 +61,7 @@ export async function invoiceRoutes(app: FastifyInstance) {
             vendorType: veryfiData.vendor?.type,
             currency: veryfiData.currency_code || "USD",
             date: new Date(veryfiData.date || Date.now()),
-            status: "PROCESSED",
+            status: InvoiceStatus.PROCESSED,
           },
         });
 
