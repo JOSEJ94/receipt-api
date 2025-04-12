@@ -60,6 +60,7 @@ export async function invoiceRoutes(app: FastifyInstance) {
             vendorType: veryfiData.vendor?.type,
             currency: veryfiData.currency_code || "USD",
             date: new Date(veryfiData.date || Date.now()),
+            status: "PROCESSED",
           },
         });
 
