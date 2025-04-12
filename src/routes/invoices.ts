@@ -67,6 +67,7 @@ export async function invoiceRoutes(app: FastifyInstance) {
 
         return reply.status(201).send(savedInvoice);
       } catch (error) {
+        console.log("Error processing invoice:", error);
         return reply.status(500).send({ error: "Failed to process invoice" });
       }
     }
